@@ -9,6 +9,9 @@ Big goals:
   - Count Folders at pointed path
   - Count number of files at pointed path
   - Measure the size of the directory
+  - Have one feature with running on a single thread (use a regular ForEach statement), and one parallel (Parallel.ForEach)
+  
+Implementation of this was Object oriented with an emphasis on condensing features where possible. For implementing the -b flag, I deemed it better to simply execute both if statements after resetting the associated values.
 
 ## Usage
 *Requires .NET 7.0 to run*
