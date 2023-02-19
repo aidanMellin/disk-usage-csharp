@@ -1,0 +1,15 @@
+/Users/melon/Documents/Code/251/du/obj/Debug/net7.0/du.csproj.AssemblyReference.cache
+/Users/melon/Documents/Code/251/du/obj/Debug/net7.0/du.GeneratedMSBuildEditorConfig.editorconfig
+/Users/melon/Documents/Code/251/du/obj/Debug/net7.0/du.AssemblyInfoInputs.cache
+/Users/melon/Documents/Code/251/du/obj/Debug/net7.0/du.AssemblyInfo.cs
+/Users/melon/Documents/Code/251/du/obj/Debug/net7.0/du.csproj.CoreCompileInputs.cache
+/Users/melon/Documents/Code/251/du/bin/Debug/net7.0/du
+/Users/melon/Documents/Code/251/du/bin/Debug/net7.0/du.deps.json
+/Users/melon/Documents/Code/251/du/bin/Debug/net7.0/du.runtimeconfig.json
+/Users/melon/Documents/Code/251/du/bin/Debug/net7.0/du.dll
+/Users/melon/Documents/Code/251/du/bin/Debug/net7.0/du.pdb
+/Users/melon/Documents/Code/251/du/obj/Debug/net7.0/du.dll
+/Users/melon/Documents/Code/251/du/obj/Debug/net7.0/refint/du.dll
+/Users/melon/Documents/Code/251/du/obj/Debug/net7.0/du.pdb
+/Users/melon/Documents/Code/251/du/obj/Debug/net7.0/du.genruntimeconfig.cache
+/Users/melon/Documents/Code/251/du/obj/Debug/net7.0/ref/du.dll

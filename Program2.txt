@@ -1,0 +1,69 @@
+/*
+    * Count all folders and files in a directory
+    * Depending on flag passed, either execute the code via parallel.foreach or regular foreach
+    */
+    static (int folders, int files, long bytes) execute(string path, string flag){
+        Queue<string> queue = new Queue<string>();
+        queue.Enqueue(path);
+        int countFolder = 0; // Accounting for discrepancies with base folder counter
+        int countFile = 0;
+        long countByte = 0;
+        bool parallelFlagPassed = flag == "-p";
+        while(queue.Count > 0){
+            path = queue.Dequeue();
+            // Console.WriteLine(path);
+            countFolder += 1;
+            try{
+                DirectoryInfo di = new DirectoryInfo(path);
+                DirectoryInfo[] dirInfoArray = di.GetDirectories();
+                FileInfo[] files = di.GetFiles();
+                        countFile += files.Length;
+                
+                if (parallelFlagPassed){
+                    (queue, countByte) = parallelIncrementByteEnqueueSubDir(dirInfoArray, queue, countByte, files);
+                }else{
+                    (queue, countByte) = singleIncrementByteEnqueueSubDir(dirInfoArray, queue, countByte, files);
+                }
+
+            }catch (System.AggregateException e){
+                e.Handle((x) =>
+                {
+                    if (x is UnauthorizedAccessException)
+                    {
+                        Console.WriteLine("You do not have permission to access all folders in this path.");
+                        Console.WriteLine("See your network administrator or try another path.");
+                        return true;
+                    }
+                    return false;
+                });
+            } catch (UnauthorizedAccessException) {
+                // Console.WriteLine("You do not have permission to access all folders in this path.");                    
+                continue;
+            } catch (DirectoryNotFoundException) {
+                Console.WriteLine("This directory does not exist");
+                System.Environment.Exit(1);
+            }
+            
+        }
+        return (countFolder, countFile, countByte);
+    }
+    
+    static (Queue<string> queue, long countByte) parallelIncrementByteEnqueueSubDir(DirectoryInfo[] dirInfoArray, Queue<string> queue, long countByte, FileInfo[] files){
+        Parallel.ForEach(dirInfoArray, subDir => {
+                        queue.Enqueue(subDir.FullName);
+        });
+        Parallel.ForEach(files, file =>{
+            countByte += file.Length;
+        });
+        return (queue, countByte);
+    }
+
+    static (Queue<string> queue, long countByte) singleIncrementByteEnqueueSubDir(DirectoryInfo[] dirInfoArray, Queue<string> queue, long countByte, FileInfo[] files){
+        foreach(DirectoryInfo subDir in dirInfoArray){
+            queue.Enqueue(subDir.FullName);
+        }
+        foreach(FileInfo file in files){
+            countByte += file.Length;
+        }
+        return (queue, countByte);
+    }
