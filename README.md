@@ -13,10 +13,10 @@ Big goals:
 ## Usage
 *Requires .NET 7.0 to run*
 
-`Usage: du [-s] [-p] [-b] <path>
-Summarize disk usage of the set of FILES, recursively for directories.
-You MUST specify one of the parameters, -s, -p, or -b
--s	Run in single threaded mode
--p	Run in parallel mode (uses all available processors)
--b	Run in both parallel and single threaded mode
-	Runs parallel followed by sequential mode`
+Usage: du [-s] [-p] [-b] <path>  
+Summarize disk usage of the set of FILES, recursively for directories.  
+You MUST specify one of the parameters, -s, -p, or -b  
+  -s	Run in single threaded mode  
+  -p	Run in parallel mode (uses all available processors)  
+  -b	Run in both parallel and single threaded mode  
+	Runs parallel followed by sequential mode  
