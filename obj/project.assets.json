@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/melon/Documents/Code/251/du/du.csproj",
+      "projectUniqueName": "/Users/melon/Documents/Code/251/DU/du.csproj",
       "projectName": "du",
-      "projectPath": "/Users/melon/Documents/Code/251/du/du.csproj",
+      "projectPath": "/Users/melon/Documents/Code/251/DU/du.csproj",
       "packagesPath": "/Users/melon/.nuget/packages/",
-      "outputPath": "/Users/melon/Documents/Code/251/du/obj/",
+      "outputPath": "/Users/melon/Documents/Code/251/DU/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/melon/.nuget/NuGet/NuGet.Config"

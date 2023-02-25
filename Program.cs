@@ -10,24 +10,14 @@ using System.Collections.Concurrent;
 */
 class DU{
 
-    int countFolder;
-    int countFile;
-    long countByte;
     Stopwatch watch = new Stopwatch();
     string totalPrint;
 
+    (int folderCount, int fileCount, long byteCount) par;
+    (int folderCount, int fileCount, long byteCount) sing;
 
     public DU(){
-        countFolder = 0;
-        countFile = 0;
-        countByte = 0;
         totalPrint = "";
-    }
-
-    private void resetCount(){
-        this.countFolder = 0;
-        this.countFile = 0;
-        this.countByte = 0;
     }
 
     /*
@@ -74,8 +64,8 @@ class DU{
     /*
     * Return a formatted string with run time and counts, dependent on run if single or in parallel.
     */
-    private string craftPrintString(string type){
-        return $"{type} calculated in {this.watch.ElapsedMilliseconds}ms\n{this.countFolder} folders, {this.countFile} files, {this.countByte} bytes\n\n";
+    private string craftPrintString(string type, (int countFolder, int countFile, long countByte) passedValues){
+        return $"{type} calculated in {this.watch.ElapsedMilliseconds}ms\n{passedValues.countFolder} folders, {passedValues.countFile} files, {passedValues.countByte} bytes\n\n";
     }
 
     private void execute(char runType, DirectoryInfo di){
@@ -85,56 +75,71 @@ class DU{
         bool both = runType == 'b';
     
         if(runType == 'p' || both){
-            this.resetCount();
             this.watch = Stopwatch.StartNew();
-            this.parRecurse(di);
+            this.calculateCountParallel(di);
             this.watch.Stop();
-            this.totalPrint += this.craftPrintString("Parallel");
+            this.totalPrint += this.craftPrintString("Parallel", this.par);
         }
         if (runType == 's' || both){
-            this.resetCount();                
             this.watch = Stopwatch.StartNew();
-            this.singRecurse(di);
+            this.calculateCountNoParallel(di);
             this.watch.Stop();
-            this.totalPrint += this.craftPrintString("Single");
+            this.totalPrint += this.craftPrintString("Single", this.sing);
         }
     }    
 
     /*
     * Calculate total directories, count of files, and size of all files from a given path using a singular foreach
-    * update passed reference parameters
+    * update counts in the sing tuple.
+    *
+    * As a side note, the code catches essentially two of the same errors, and this is because in testing on different platforms, I encountered different errors.
     */
-    private void singRecurse(DirectoryInfo dInfo){
+    private void calculateCountNoParallel(DirectoryInfo dInfo){
         try{
             DirectoryInfo[] directories = dInfo.GetDirectories();
+            FileInfo[] files = dInfo.GetFiles();
+
             foreach(DirectoryInfo d in directories){
-                this.countFolder += 1;
-                foreach(FileInfo f in d.GetFiles()){
-                    this.countFile += 1;
-                    this.countByte += f.Length;
+                this.sing.folderCount += 1;
+                foreach(FileInfo f in files){
+                    this.sing.fileCount += 1;
+                    this.sing.byteCount += f.Length;
                 }
-                singRecurse(d);
+                calculateCountNoParallel(d);
             }
         } catch (UnauthorizedAccessException){
             Console.WriteLine("You do not have access to this directory");
+        } catch (System.AggregateException e){
+                e.Handle((x) =>{
+                    if (x is UnauthorizedAccessException){
+                        Console.WriteLine("You do not have permission to access all folders in this path.");
+                        return true;
+                    }
+                    return false;
+                    });
         }
     }
 
     /*
     * Calculate total directories, count of files, and size of all files from a given path using a parallel foreach
-    * update passed reference parameters
+    * update passed reference parameters via Interlocked.
+    *
+    * As a side note, the code catches essentially two of the same errors, and this is because in testing on different platforms, I encountered different errors.
     */
-    private void parRecurse(DirectoryInfo dInfo){
+    private void calculateCountParallel(DirectoryInfo dInfo){
         try{
             DirectoryInfo[] directories = dInfo.GetDirectories();
+            FileInfo[] files = dInfo.GetFiles();
+
             Parallel.ForEach(directories, d => {
-                this.countFolder += 1;
-                foreach(FileInfo f in d.GetFiles()){
-                    this.countFile += 1;
-                    this.countByte += f.Length;
+                Interlocked.Increment(ref this.par.folderCount);
+                foreach(FileInfo f in files){
+                    Interlocked.Increment(ref this.par.fileCount);
+                    Interlocked.Add(ref this.par.byteCount, f.Length);
                 }
-                parRecurse(d);
+                calculateCountParallel(d);
             });
+
         } catch (UnauthorizedAccessException){
             Console.WriteLine("You do not have access to this directory");
         } catch (System.AggregateException e){
